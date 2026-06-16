@@ -1,0 +1,131 @@
+// Prisma Schema for UK Aesthetics Lead Engine
+// Based on Forbes Website patterns
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Core deduplicated clinic records
+model Clinic {
+  id              String     @id @default(cuid())
+  name            String
+  postcode        String
+  borough         String
+  address         String?
+
+  // Regulatory and accreditation
+  sicCodes        String[]   @db("TEXT[]")
+  cqcRegistered   Boolean    @default(false)
+  saveFaceListed  Boolean    @default(false)
+  licenceType     String?
+
+  // Contact and web presence
+  websiteUrl      String?
+  phone           String?
+  email           String?
+
+  // Metadata
+  sources         String[]
+  lastVerifiedAt  DateTime   @default(now())
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Relations
+  stagingRecords  StagingRaw[]
+  ads             Ad[]
+  scores          Score[]
+  outreachQueue   OutreachQueue[]
+
+  @@unique([name, postcode])
+  @@map("clinics")
+}
+
+// Raw records before deduplication
+model StagingRaw {
+  id           String     @id @default(cuid())
+  source       String     // companies_house, cqc, save_face, borough_licence, facebook_ads
+  payload      Json       // Store raw API/scraped data
+  clinicMatchId String?   // Links to deduped Clinic
+  fetchedAt    DateTime   @default(now())
+  processedAt  DateTime?
+
+  clinic       Clinic?    @relation(fields: [clinicMatchId], references: [id])
+
+  @@index([source, processedAt])
+  @@map("staging_raw")
+}
+
+// Facebook ad creative linked to clinics
+model Ad {
+  id          String     @id @default(cuid())
+  clinicId    String
+  clinic      Clinic     @relation(fields: [clinicId], references: [id])
+
+  adText      String?
+  creativeUrl String?
+  mediaType   String?    // IMAGE, VIDEO, MEME
+  platforms   String[]   @db("TEXT[]")
+
+  firstSeen   DateTime   @default(now())
+  lastSeen    DateTime   @default(now())
+  source      String     // apify, meta_api
+
+  @@index([clinicId, lastSeen])
+  @@map("ads")
+}
+
+// Claude API scoring output
+model Score {
+  id                String     @id @default(cuid())
+  clinicId          String
+  clinic            Clinic     @relation(fields: [clinicId], references: [id])
+
+  icpScore          Int        // 0-100 ICP fit
+  compositeScore    Int        // 0-100 final ranking
+  painPoints        Json       // Array of detected weakness
+  serviceToPitch    String     // website | backlinks | facebook_ads
+  personalisedHook  String     // One-line hook
+  contactConfidence Int        // 0-100 email validity
+  adAuditFlag       Boolean    @default(false)
+
+  scoredAt          DateTime   @default(now())
+  modelVersion      String     @default("claude-opus-4-8")
+
+  @@unique([clinicId])
+  @@map("scores")
+}
+
+// Outreach queue for human approval
+model OutreachQueue {
+  id        String        @id @default(cuid())
+  clinicId  String
+  clinic    Clinic        @relation(fields: [clinicId], references: [id])
+
+  channel   String        // email, linkedin_dm
+  subject   String?
+  body      String        @db.Text
+  status    OutreachStatus @default(DRAFTED)
+
+  draftedAt DateTime      @default(now())
+  sentAt    DateTime?
+  repliedAt DateTime?
+  openedAt  DateTime?
+
+  @@index([status, draftedAt])
+  @@map("outreach_queue")
+}
+
+enum OutreachStatus {
+  DRAFTED
+  APPROVED
+  SENT
+  OPENED
+  REPLIED
+  BOUNCED
+  CLOSED
+}
