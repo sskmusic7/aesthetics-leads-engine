@@ -1,19 +1,11 @@
-// Claude Opus 4.8 Scoring Worker
-// Scores clinics using Claude API with ICP scoring and personalized outreach hooks
+// AI Scoring Worker with Anthropic/Gemini Fallback
+// Scores clinics using AI with automatic failover between providers
 
-const Anthropic = require('@anthropic-ai/sdk');
 const { PrismaClient } = require('@prisma/client');
-const buildScoringPrompt = require('../lib/scoring-prompts');
+const aiService = require('../lib/ai-service');
+const cacheControl = require('../lib/cache-control');
 
 const prisma = new PrismaClient();
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
-});
-
-const MODEL = 'claude-opus-4-8';
-const MAX_TOKENS = 1000;
-const MAX_DAILY_TOKENS = parseInt(process.env.MAX_DAILY_TOKENS || '50000');
 
 /**
  * Main scoring worker function
@@ -91,11 +83,11 @@ async function scoreBatch(clinics) {
 }
 
 /**
- * Score individual clinic using Claude Opus 4.8
+ * Score individual clinic using AI service with fallback
  */
 async function scoreClinic(clinic) {
   try {
-    // Build input object for Claude
+    // Build input object for AI
     const input = {
       clinic_name: clinic.name,
       borough: clinic.borough,
@@ -116,22 +108,11 @@ async function scoreClinic(clinic) {
 
     console.log(`Scoring: ${clinic.name} (${clinic.borough})`);
 
-    // Call Claude API
-    const response = await anthropic.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      messages: [{
-        role: 'user',
-        content: buildScoringPrompt(input)
-      }]
-    });
-
-    // Parse JSON response
-    const responseText = response.content[0].text;
-    const scoreData = parseJsonResponse(responseText);
+    // Use AI service with automatic fallback
+    const scoreData = await aiService.scoreClinic(input);
 
     if (!scoreData) {
-      throw new Error('Failed to parse Claude response as JSON');
+      throw new Error('AI service returned null score');
     }
 
     // Store score in database
@@ -145,11 +126,11 @@ async function scoreClinic(clinic) {
         personalisedHook: scoreData.personalised_hook,
         contactConfidence: scoreData.contact_confidence,
         adAuditFlag: scoreData.ad_audit_flag,
-        modelVersion: MODEL
+        modelVersion: scoreData.model_version
       }
     });
 
-    console.log(`  ✅ Scored: ${score.compositeScore}/100 - ${scoreData.service_to_pitch}`);
+    console.log(`  ✅ Scored: ${score.compositeScore}/100 - ${scoreData.service_to_pitch} (${scoreData.provider})`);
     return score;
 
   } catch (error) {

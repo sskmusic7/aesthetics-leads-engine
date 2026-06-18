@@ -1,22 +1,13 @@
-// Outreach Worker
-// Handles email drafting with Claude Sonnet 4.6 and Resend integration
+// Outreach Worker with AI Fallback
+// Handles email drafting with AI service (Anthropic/Gemini) and Resend integration
 
-const Anthropic = require('@anthropic-ai/sdk');
 const Resend = require('resend');
 const { PrismaClient } = require('@prisma/client');
-const { buildEmailPrompt, buildLinkedInDMPrompt } = require('../lib/scoring-prompts');
+const aiService = require('../lib/ai-service');
 const cacheControl = require('../lib/cache-control');
 
 const prisma = new PrismaClient();
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
-});
-
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-const EMAIL_MODEL = 'claude-sonnet-4-6';
-const MAX_EMAIL_TOKENS = 800;
 
 /**
  * Main outreach worker function
@@ -139,32 +130,15 @@ async function generateDrafts(clinics) {
 }
 
 /**
- * Generate email draft using Claude Sonnet 4.6
+ * Generate email draft using AI service with fallback
  */
 async function generateEmailDraft(clinic, score) {
   try {
-    const prompt = buildEmailPrompt(clinic, score);
+    // Use AI service with automatic fallback
+    const email = await aiService.generateEmail(clinic, score);
 
-    const response = await anthropic.messages.create({
-      model: EMAIL_MODEL,
-      max_tokens: MAX_EMAIL_TOKENS,
-      messages: [{
-        role: 'user',
-        content: prompt
-      }]
-    });
-
-    const emailText = response.content[0].text;
-
-    // Track API call
-    await cacheControl.trackApiCall(
-      EMAIL_MODEL,
-      response.usage.input_tokens,
-      response.usage.output_tokens
-    );
-
-    console.log(`  📧 Generated email for ${clinic.name}`);
-    return emailText;
+    console.log(`  📧 Generated email for ${clinic.name} (${email.provider})`);
+    return `SUBJECT: ${email.subject}\n\n${email.body}`;
 
   } catch (error) {
     console.error(`Error generating email for ${clinic.name}:`, error.message);
@@ -173,31 +147,36 @@ async function generateEmailDraft(clinic, score) {
 }
 
 /**
- * Generate LinkedIn DM using Claude Sonnet 4.6
+ * Generate LinkedIn DM using AI service
  */
 async function generateLinkedInDM(clinic, score) {
   try {
-    const prompt = buildLinkedInDMPrompt(clinic, score);
+    // For LinkedIn DMs, we'll use a simpler prompt through the AI service
+    const dmPrompt = `Generate a short LinkedIn DM (under 100 words) for ${clinic.name}.
 
-    const response = await anthropic.messages.create({
-      model: EMAIL_MODEL,
-      max_tokens: 300, // LinkedIn DMs are short
-      messages: [{
-        role: 'user',
-        content: prompt
-      }]
+Context: They scored ${score.icpScore}/100 on our ICP fit.
+Pain points: ${score.painPoints?.join(', ')}
+Service to pitch: ${score.serviceToPitch}
+
+Write a professional, concise LinkedIn message that:
+1. References their specific situation
+2. Mentions one relevant pain point
+3. Suggests a quick call
+4. Is conversational but professional
+5. Under 100 words`;
+
+    // Use the email generation as a base for LinkedIn DMs
+    const email = await aiService.generateEmail(clinic, {
+      ...score,
+      service_to_pitch: 'linkedin_connection'
     });
 
-    const dmText = response.content[0].text;
+    // Extract just the body and convert to LinkedIn DM format
+    const dmText = email.body
+      .replace(/\n\n+/g, '\n\n')  // Normalize spacing
+      .split('\n\n')[0] + '\n\nWould you be open to a quick call?';
 
-    // Track API call
-    await cacheControl.trackApiCall(
-      EMAIL_MODEL,
-      response.usage.input_tokens,
-      response.usage.output_tokens
-    );
-
-    console.log(`  💼 Generated LinkedIn DM for ${clinic.name}`);
+    console.log(`  💼 Generated LinkedIn DM for ${clinic.name} (${email.provider})`);
     return dmText;
 
   } catch (error) {
