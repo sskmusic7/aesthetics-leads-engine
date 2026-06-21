@@ -6,6 +6,12 @@
   NEXT_PUBLIC_API_URL = "http://46.101.74.92:3001"
   NODE_VERSION = "18"
 
+# Ensure _next folder is served properly
+[[redirects]]
+  from = "/_next/*"
+  to = "/_next/:splat"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
