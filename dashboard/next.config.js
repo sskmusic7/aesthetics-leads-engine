@@ -1,17 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  env: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY
+  output: 'export', // Enable static export for Netlify
+  images: {
+    unoptimized: true // Required for static export
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:3000/api/:path*',
-      },
-    ]
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://46.101.74.92:3001'
   }
 }
 
