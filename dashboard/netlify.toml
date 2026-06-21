@@ -1,11 +1,18 @@
 [build]
-  command = "cd dashboard && npm install && npm run build"
-  publish = "dashboard/out"
+  command = "npm install && npm run build"
+  publish = "out"
 
 [build.environment]
   NEXT_PUBLIC_API_URL = "http://46.101.74.92:3001"
   NODE_VERSION = "18"
 
+# Serve _next static files directly (CRITICAL: must come before catch-all)
+[[redirects]]
+  from = "/_next/*"
+  to = "/_next/:splat"
+  status = 200
+
+# Catch-all redirect for SPA routing (must come AFTER _next rule)
 [[redirects]]
   from = "/*"
   to = "/index.html"
