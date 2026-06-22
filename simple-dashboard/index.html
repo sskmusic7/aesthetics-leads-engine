@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Aesthetics Lead Engine</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { background: white; padding: 20px; border-bottom: 1px solid #e5e7eb; margin-bottom: 30px; }
+        .header h1 { font-size: 24px; color: #111827; margin-bottom: 8px; }
+        .header p { color: #6b7280; font-size: 14px; }
+        .nav { display: flex; gap: 20px; margin-top: 20px; }
+        .nav a { color: #374151; text-decoration: none; font-size: 14px; }
+        .nav a:hover { color: #111827; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .stat-label { font-size: 14px; color: #6b7280; margin-bottom: 8px; }
+        .stat-value { font-size: 32px; font-weight: bold; color: #111827; }
+        .status { padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .status.loading { background: #fef3c7; color: #92400e; }
+        .status.error { background: #fee2e2; color: #991b1b; }
+        .status.success { background: #d1fae5; color: #065f46; }
+        .status.info { background: #dbeafe; color: #1e40af; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🇬🇧 UK Aesthetics Lead Engine</h1>
+            <p>Autonomous clinic finder and outreach system</p>
+            <div class="nav">
+                <a href="/">Dashboard</a>
+                <a href="/clinics.html">Clinics</a>
+                <a href="/outreach.html">Outreach</a>
+                <a href="/settings.html">Settings</a>
+            </div>
+        </div>
+
+        <div id="status" class="status loading">
+            ⏳ Connecting to backend...
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">Total Clinics</div>
+                <div class="stat-value" id="total-clinics">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Scored Clinics</div>
+                <div class="stat-value" id="scored-clinics">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Pending Outreach</div>
+                <div class="stat-value" id="pending-outreach">-</div>
+            </div>
+        </div>
+
+        <div class="status info">
+            <strong>🚀 Quick Start:</strong>
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>Backend running on: <code>http://46.101.74.92:3001</code></li>
+                <li>Status: <span id="backend-status">Checking...</span></li>
+                <li>This simple dashboard connects directly to your droplet API</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://46.101.74.92:3001';
+
+        async function checkBackend() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                const data = await response.json();
+                
+                document.getElementById('status').className = 'status success';
+                document.getElementById('status').innerHTML = '✅ Backend connected successfully!';
+                document.getElementById('backend-status').textContent = 'Online ✅';
+                
+                // Load clinic data
+                loadClinics();
+            } catch (error) {
+                document.getElementById('status').className = 'status error';
+                document.getElementById('status').innerHTML = '❌ Cannot connect to backend. Make sure the droplet is running.';
+                document.getElementById('backend-status').textContent = 'Offline ❌';
+            }
+        }
+
+        async function loadClinics() {
+            try {
+                const response = await fetch(`${API_URL}/api/clinics`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const clinics = data.data || [];
+                    document.getElementById('total-clinics').textContent = clinics.length;
+                    document.getElementById('scored-clinics').textContent = '0';
+                    document.getElementById('pending-outreach').textContent = '0';
+                }
+            } catch (error) {
+                console.error('Error loading clinics:', error);
+            }
+        }
+
+        // Check backend on page load
+        checkBackend();
+        
+        // Refresh every 30 seconds
+        setInterval(checkBackend, 30000);
+    </script>
+</body>
+</html>

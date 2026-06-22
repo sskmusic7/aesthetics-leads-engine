@@ -18,7 +18,8 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://46.101.74.92:3001'
+        // Use relative URL for Netlify proxy (empty) or full URL for direct access
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || ''
         const response = await fetch(`${apiUrl}/api/clinics?limit=10`)
         if (response.ok) {
           const data = await response.json()

@@ -3,8 +3,22 @@
   publish = "dashboard/out"
 
 [build.environment]
-  NEXT_PUBLIC_API_URL = "http://46.101.74.92:3001"
+  NEXT_PUBLIC_API_URL = ""
   NODE_VERSION = "18"
+
+# API proxy redirects to backend (solves mixed content HTTPS issue)
+[[redirects]]
+  from = "/api/*"
+  to = "http://46.101.74.92:3001/api/:splat"
+  status = 200
+  force = true
+
+# Health check proxy
+[[redirects]]
+  from = "/health"
+  to = "http://46.101.74.92:3001/health"
+  status = 200
+  force = true
 
 # Ensure _next folder is served properly
 [[redirects]]
