@@ -4,283 +4,450 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UK Aesthetics Lead Engine</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
         * {
-            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        :root {
+            --color-primary: #141414;
+            --color-secondary: #1F1F25;
+            --color-body: #74787C;
+            --color-heading: #fff;
+            --color-white: #fff;
+            --color-success: #3EB75E;
+            --color-border: #2A2A2A;
+            --font-primary: "Hanken Grotesk", sans-serif;
         }
 
-        .card-gradient {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--color-primary);
+            color: var(--color-body);
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100vh;
         }
 
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        .pulse-animation {
-            animation: pulse 2s infinite;
+        /* Header */
+        header {
+            background-color: var(--color-secondary);
+            border-bottom: 1px solid var(--color-border);
+            padding: 20px 0;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-white);
+            text-decoration: none;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .nav-links {
+            display: flex;
+            gap: 30px;
         }
 
-        .hover-lift {
-            transition: all 0.3s ease;
+        .nav-links a {
+            color: var(--color-body);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
         }
 
-        .hover-lift:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        .nav-links a:hover {
+            color: var(--color-white);
         }
 
-        .stat-icon {
-            width: 60px;
-            height: 60px;
+        .nav-links a.active {
+            color: var(--color-white);
+        }
+
+        /* Main Content */
+        main {
+            padding: 40px 0;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-white);
+            margin-bottom: 10px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--color-body);
+            margin-bottom: 40px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            padding: 30px;
+        }
+
+        .stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--color-white);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--color-body);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .loading .stat-value {
+            color: var(--color-body);
+            opacity: 0.5;
+        }
+
+        /* Actions Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .action-card {
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            padding: 30px;
+            text-decoration: none;
+            display: block;
+            transition: border-color 0.3s;
+        }
+
+        .action-card:hover {
+            border-color: var(--color-white);
+        }
+
+        .action-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--color-white);
+            margin-bottom: 10px;
+        }
+
+        .action-description {
+            font-size: 14px;
+            color: var(--color-body);
+        }
+
+        /* Activity Section */
+        .activity-section {
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            padding: 30px;
+        }
+
+        .section-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-white);
+            margin-bottom: 20px;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 16px;
+            font-size: 16px;
+            color: var(--color-white);
         }
 
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            background: #e5e7eb;
-            overflow: hidden;
+        .activity-content {
+            flex: 1;
         }
 
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
+        .activity-text {
+            font-size: 14px;
+            color: var(--color-white);
+            margin-bottom: 5px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: var(--color-body);
+        }
+
+        .activity-status {
+            font-size: 12px;
+            color: var(--color-success);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--color-secondary);
+            border-top: 1px solid var(--color-border);
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            font-size: 14px;
+            color: var(--color-body);
+        }
+
+        .footer-brand {
+            font-size: 14px;
+            color: var(--color-white);
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .actions-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+        }
+
+        /* Error state */
+        .error-message {
+            background-color: rgba(255, 0, 3, 0.1);
+            border: 1px solid #FF0003;
+            color: #FF0003;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .loading-text {
+            color: var(--color-body);
+            font-size: 14px;
+            text-align: center;
+            padding: 40px;
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="gradient-bg text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold flex items-center gap-3">
-                        <i class="fas fa-sparkles"></i>
-                        UK Aesthetics Lead Engine
-                    </h1>
-                    <p class="text-purple-100 mt-1">Autonomous clinic finder & outreach system</p>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="bg-white/20 rounded-lg px-4 py-2">
-                        <span class="text-sm font-medium">System Status</span>
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 bg-green-400 rounded-full pulse-animation"></span>
-                            <span class="text-sm">Active</span>
-                        </div>
-                    </div>
-                </div>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">UK Aesthetics Lead Engine</a>
+                <nav class="nav-links">
+                    <a href="#" class="active">Dashboard</a>
+                    <a href="#">Clinics</a>
+                    <a href="#">Outreach</a>
+                    <a href="#">Settings</a>
+                </nav>
             </div>
         </div>
     </header>
 
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex gap-8">
-                <a href="#" class="py-4 px-2 border-b-2 border-purple-500 text-purple-600 font-medium">
-                    <i class="fas fa-chart-line mr-2"></i>Dashboard
+    <main>
+        <div class="container">
+            <h1 class="section-title">Dashboard</h1>
+            <p class="section-subtitle">Autonomous clinic finder and outreach system</p>
+
+            <div id="error-container"></div>
+
+            <div class="stats-grid" id="stats-grid">
+                <div class="stat-card loading">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Total Clinics</div>
+                </div>
+                <div class="stat-card loading">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Scored Clinics</div>
+                </div>
+                <div class="stat-card loading">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">High Priority</div>
+                </div>
+                <div class="stat-card loading">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Pending Outreach</div>
+                </div>
+            </div>
+
+            <div class="actions-grid">
+                <a href="#" class="action-card">
+                    <div class="action-title">Discover Clinics</div>
+                    <div class="action-description">Find new aesthetic clinics across London boroughs</div>
                 </a>
-                <a href="#" class="py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-building mr-2"></i>Clinics
+                <a href="#" class="action-card">
+                    <div class="action-title">Auto Outreach</div>
+                    <div class="action-description">Launch automated outreach campaigns</div>
                 </a>
-                <a href="#" class="py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-paper-plane mr-2"></i>Outreach
-                </a>
-                <a href="#" class="py-4 px-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-cog mr-2"></i>Settings
+                <a href="#" class="action-card">
+                    <div class="action-title">View Analytics</div>
+                    <div class="action-description">Track performance and campaign results</div>
                 </a>
             </div>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Welcome Banner -->
-        <div class="glass-effect rounded-2xl p-8 mb-8 fade-in">
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2">Welcome Back!</h2>
-                    <p class="text-gray-600">Your autonomous lead generation system is ready to find and outreach to London aesthetic clinics.</p>
-                </div>
-                <div class="hidden md:flex">
-                    <i class="fas fa-robot text-6xl text-purple-500"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Total Clinics -->
-            <div class="bg-white rounded-xl shadow-sm p-6 hover-lift fade-in">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="stat-icon bg-blue-100">
-                        <i class="fas fa-building text-2xl text-blue-600"></i>
-                    </div>
-                    <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">+12 today</span>
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900">2,847</h3>
-                <p class="text-gray-500 text-sm mt-1">Total Clinics</p>
-                <div class="progress-bar mt-3">
-                    <div class="progress-fill bg-blue-500" style="width: 78%"></div>
-                </div>
-            </div>
-
-            <!-- Scored Clinics -->
-            <div class="bg-white rounded-xl shadow-sm p-6 hover-lift fade-in" style="animation-delay: 0.1s">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="stat-icon bg-green-100">
-                        <i class="fas fa-star text-2xl text-green-600"></i>
-                    </div>
-                    <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">+8 today</span>
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900">1,923</h3>
-                <p class="text-gray-500 text-sm mt-1">Scored Clinics</p>
-                <div class="progress-bar mt-3">
-                    <div class="progress-fill bg-green-500" style="width: 67%"></div>
-                </div>
-            </div>
-
-            <!-- High Priority -->
-            <div class="bg-white rounded-xl shadow-sm p-6 hover-lift fade-in" style="animation-delay: 0.2s">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="stat-icon bg-orange-100">
-                        <i class="fas fa-fire text-2xl text-orange-600"></i>
-                    </div>
-                    <span class="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-full">Hot</span>
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900">342</h3>
-                <p class="text-gray-500 text-sm mt-1">High Priority</p>
-                <div class="progress-bar mt-3">
-                    <div class="progress-fill bg-orange-500" style="width: 45%"></div>
-                </div>
-            </div>
-
-            <!-- Outreach Sent -->
-            <div class="bg-white rounded-xl shadow-sm p-6 hover-lift fade-in" style="animation-delay: 0.3s">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="stat-icon bg-purple-100">
-                        <i class="fas fa-paper-plane text-2xl text-purple-600"></i>
-                    </div>
-                    <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">+56 today</span>
-                </div>
-                <h3 class="text-3xl font-bold text-gray-900">1,456</h3>
-                <p class="text-gray-500 text-sm mt-1">Outreach Sent</p>
-                <div class="progress-bar mt-3">
-                    <div class="progress-fill bg-purple-500" style="width: 51%"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Action Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white hover-lift cursor-pointer">
-                <i class="fas fa-search text-4xl mb-4 opacity-80"></i>
-                <h3 class="text-xl font-bold mb-2">Discover Clinics</h3>
-                <p class="text-blue-100 text-sm">Find new aesthetic clinics across London boroughs</p>
-                <div class="mt-4 flex items-center text-sm font-medium">
-                    Start Searching <i class="fas fa-arrow-right ml-2"></i>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white hover-lift cursor-pointer">
-                <i class="fas fa-magic text-4xl mb-4 opacity-80"></i>
-                <h3 class="text-xl font-bold mb-2">Auto Outreach</h3>
-                <p class="text-green-100 text-sm">Launch automated outreach campaigns</p>
-                <div class="mt-4 flex items-center text-sm font-medium">
-                    Launch Campaign <i class="fas fa-arrow-right ml-2"></i>
-                </div>
-            </div>
-
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white hover-lift cursor-pointer">
-                <i class="fas fa-chart-bar text-4xl mb-4 opacity-80"></i>
-                <h3 class="text-xl font-bold mb-2">View Analytics</h3>
-                <p class="text-purple-100 text-sm">Track performance and campaign results</p>
-                <div class="mt-4 flex items-center text-sm font-medium">
-                    View Reports <i class="fas fa-arrow-right ml-2"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="bg-white rounded-xl shadow-sm p-6 fade-in" style="animation-delay: 0.4s">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Recent Activity</h3>
-            <div class="space-y-4">
-                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-check text-green-600"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-medium text-gray-900">12 new clinics discovered in Kensington</p>
-                        <p class="text-sm text-gray-500">2 minutes ago</p>
-                    </div>
-                    <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded">Completed</span>
-                </div>
-
-                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-paper-plane text-blue-600"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-medium text-gray-900">Outreach email sent to Harley Street Aesthetics</p>
-                        <p class="text-sm text-gray-500">15 minutes ago</p>
-                    </div>
-                    <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">Sent</span>
-                </div>
-
-                <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-star text-purple-600"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="font-medium text-gray-900">High priority score assigned to 8 clinics</p>
-                        <p class="text-sm text-gray-500">1 hour ago</p>
-                    </div>
-                    <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded">Scored</span>
+            <div class="activity-section">
+                <div class="section-header">Recent Activity</div>
+                <div class="activity-list" id="activity-list">
+                    <div class="loading-text">Loading activity...</div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex items-center justify-between">
-                <p class="text-sm text-gray-500">© 2024 UK Aesthetics Lead Engine. All rights reserved.</p>
-                <div class="flex items-center gap-4">
-                    <span class="text-xs text-gray-400">Powered by</span>
-                    <span class="text-sm font-medium text-purple-600">Playbook MPR</span>
-                </div>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">2024 UK Aesthetics Lead Engine. All rights reserved.</div>
+                <div class="footer-brand">Powered by Playbook MPR</div>
             </div>
         </div>
     </footer>
+
+    <script>
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://46.101.74.92:3001'
+            : '';
+
+        async function fetchDashboardData() {
+            const statsGrid = document.getElementById('stats-grid');
+            const activityList = document.getElementById('activity-list');
+            const errorContainer = document.getElementById('error-container');
+
+            try {
+                const response = await fetch(`${API_BASE}/api/clinics?limit=10`);
+                if (!response.ok) {
+                    throw new Error('Failed to connect to backend');
+                }
+
+                const data = await response.json();
+
+                // Update stats
+                const stats = statsGrid.querySelectorAll('.stat-card');
+                stats[0].classList.remove('loading');
+                stats[0].querySelector('.stat-value').textContent = data.total || 0;
+
+                stats[1].classList.remove('loading');
+                stats[1].querySelector('.stat-value').textContent = data.scored || 0;
+
+                stats[2].classList.remove('loading');
+                stats[2].querySelector('.stat-value').textContent = data.high_priority || 0;
+
+                stats[3].classList.remove('loading');
+                stats[3].querySelector('.stat-value').textContent = data.pending || 0;
+
+                // Update activity
+                activityList.innerHTML = '';
+
+                if (data.clinics && data.clinics.length > 0) {
+                    data.clinics.slice(0, 5).forEach(clinic => {
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item';
+                        activityItem.innerHTML = `
+                            <div class="activity-icon">+</div>
+                            <div class="activity-content">
+                                <div class="activity-text">Clinic discovered: ${clinic.name || clinic.clinic_name || 'Unknown'}</div>
+                                <div class="activity-time">London, UK</div>
+                            </div>
+                            <div class="activity-status">New</div>
+                        `;
+                        activityList.appendChild(activityItem);
+                    });
+                } else {
+                    activityList.innerHTML = '<div class="loading-text">No recent activity</div>';
+                }
+
+            } catch (error) {
+                console.error('API Error:', error);
+                errorContainer.innerHTML = `
+                    <div class="error-message">
+                        Unable to connect to backend. Please ensure the backend service is running at 46.101.74.92:3001
+                    </div>
+                `;
+                statsGrid.querySelectorAll('.stat-card').forEach(card => {
+                    card.classList.remove('loading');
+                    card.querySelector('.stat-value').textContent = '-';
+                });
+                activityList.innerHTML = '<div class="loading-text">Unable to load activity</div>';
+            }
+        }
+
+        // Load data on page load
+        fetchDashboardData();
+
+        // Refresh data every 30 seconds
+        setInterval(fetchDashboardData, 30000);
+    </script>
 </body>
 </html>
