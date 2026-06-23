@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outreach - UK Aesthetics Lead Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #141414;
+            --color-secondary: #1F1F25;
+            --color-body: #74787C;
+            --color-heading: #fff;
+            --color-white: #fff;
+            --color-success: #3EB75E;
+            --color-border: #2A2A2A;
+            --font-primary: "Hanken Grotesk", sans-serif;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--color-primary);
+            color: var(--color-body);
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: var(--color-secondary);
+            border-bottom: 1px solid var(--color-border);
+            padding: 20px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-white);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--color-body);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-white);
+        }
+
+        .nav-links a.active {
+            color: var(--color-white);
+        }
+
+        main {
+            padding: 40px 0;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--color-white);
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: var(--color-body);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: 1px solid var(--color-border);
+            background-color: var(--color-secondary);
+            color: var(--color-white);
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            border-color: var(--color-white);
+        }
+
+        .btn-primary {
+            background-color: var(--color-white);
+            color: var(--color-primary);
+            border-color: var(--color-white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-secondary);
+            color: var(--color-white);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            padding: 25px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--color-white);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--color-body);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .campaigns-section {
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--color-white);
+        }
+
+        .campaign-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .campaign-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .campaign-info {
+            flex: 1;
+        }
+
+        .campaign-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-white);
+            margin-bottom: 5px;
+        }
+
+        .campaign-stats {
+            font-size: 13px;
+            color: var(--color-body);
+        }
+
+        .campaign-status {
+            padding: 6px 12px;
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--color-white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .campaign-status.active {
+            border-color: var(--color-success);
+            color: var(--color-success);
+        }
+
+        .campaign-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .campaign-actions .btn {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .outreach-log {
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            padding: 30px;
+        }
+
+        .log-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background-color: var(--color-primary);
+            border: 1px solid var(--color-border);
+        }
+
+        .log-time {
+            font-size: 12px;
+            color: var(--color-body);
+            min-width: 120px;
+        }
+
+        .log-message {
+            flex: 1;
+            font-size: 14px;
+            color: var(--color-white);
+        }
+
+        .log-status {
+            font-size: 11px;
+            color: var(--color-success);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .campaign-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .campaign-actions {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .campaign-actions .btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">UK Aesthetics Lead Engine</a>
+                <nav class="nav-links">
+                    <a href="index.html">Dashboard</a>
+                    <a href="clinics.html">Clinics</a>
+                    <a href="outreach.html" class="active">Outreach</a>
+                    <a href="settings.html">Settings</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Outreach</h1>
+                    <p class="page-subtitle">Automated outreach campaigns and activity</p>
+                </div>
+                <div class="action-bar">
+                    <button class="btn">Export Report</button>
+                    <button class="btn btn-primary">New Campaign</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">1,456</div>
+                    <div class="stat-label">Total Sent</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">342</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">89</div>
+                    <div class="stat-label">Responses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">23</div>
+                    <div class="stat-label">Conversions</div>
+                </div>
+            </div>
+
+            <div class="campaigns-section">
+                <div class="section-header">
+                    <div class="section-title">Active Campaigns</div>
+                    <button class="btn">View All</button>
+                </div>
+                <div class="campaign-list">
+                    <div class="campaign-item">
+                        <div class="campaign-info">
+                            <div class="campaign-name">London Aesthetics Introduction</div>
+                            <div class="campaign-stats">456 sent, 89 opened, 23 replied</div>
+                        </div>
+                        <div class="campaign-status active">Active</div>
+                        <div class="campaign-actions">
+                            <button class="btn">Pause</button>
+                            <button class="btn btn-primary">Edit</button>
+                        </div>
+                    </div>
+                    <div class="campaign-item">
+                        <div class="campaign-info">
+                            <div class="campaign-name">High Priority Follow-up</div>
+                            <div class="campaign-stats">234 sent, 45 opened, 12 replied</div>
+                        </div>
+                        <div class="campaign-status active">Active</div>
+                        <div class="campaign-actions">
+                            <button class="btn">Pause</button>
+                            <button class="btn btn-primary">Edit</button>
+                        </div>
+                    </div>
+                    <div class="campaign-item">
+                        <div class="campaign-info">
+                            <div class="campaign-name">Harley Street Special</div>
+                            <div class="campaign-stats">178 sent, 34 opened, 8 replied</div>
+                        </div>
+                        <div class="campaign-status">Paused</div>
+                        <div class="campaign-actions">
+                            <button class="btn btn-primary">Resume</button>
+                            <button class="btn">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="outreach-log">
+                <div class="section-header">
+                    <div class="section-title">Recent Activity</div>
+                    <button class="btn">Clear Log</button>
+                </div>
+                <div class="log-list" id="log-list">
+                    <div class="log-item">
+                        <div class="log-time">2 hours ago</div>
+                        <div class="log-message">Email sent to Kensington Aesthetics Clinic</div>
+                        <div class="log-status">Sent</div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-time">3 hours ago</div>
+                        <div class="log-message">Response received from Westminster Skin Clinic</div>
+                        <div class="log-status">Reply</div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-time">4 hours ago</div>
+                        <div class="log-message">Email opened by Harley Street Dermatology</div>
+                        <div class="log-status">Opened</div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-time">5 hours ago</div>
+                        <div class="log-message">Campaign "London Introduction" sent to 45 new clinics</div>
+                        <div class="log-status">Batch</div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-time">6 hours ago</div>
+                        <div class="log-message">Follow-up email sent to Camden Cosmetic Centre</div>
+                        <div class="log-status">Sent</div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-time">8 hours ago</div>
+                        <div class="log-message">New clinic discovered: Chelsea Aesthetics</div>
+                        <div class="log-status">New</div>
+                    </div>
+                    <div class="log-item">
+                        <div class="log-time">12 hours ago</div>
+                        <div class="log-message">Email bounced for invalid address at removed clinic</div>
+                        <div class="log-status">Error</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">2024 UK Aesthetics Lead Engine. All rights reserved.</div>
+                <div class="footer-brand">Powered by Playbook MPR</div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
