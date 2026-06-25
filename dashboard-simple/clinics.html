@@ -380,23 +380,34 @@
                     throw new Error('Failed to connect to backend');
                 }
 
-                const data = await response.json();
+                const result = await response.json();
+                const clinics = result.data || [];
 
                 clinicsGrid.innerHTML = '';
 
-                if (data.clinics && data.clinics.length > 0) {
-                    data.clinics.forEach(clinic => {
-                        const score = clinic.score || Math.floor(Math.random() * 100);
+                if (clinics.length > 0) {
+                    clinics.forEach(clinic => {
+                        // Get the most recent score if available
+                        const latestScore = clinic.scores && clinic.scores.length > 0
+                            ? clinic.scores[0].compositeScore
+                            : null;
+
+                        const score = latestScore || 0;
                         const scoreClass = score >= 70 ? 'high' : score >= 40 ? 'medium' : '';
                         const scoreLabel = score >= 70 ? 'High' : score >= 40 ? 'Medium' : 'Low';
+
+                        // Get outreach status
+                        const outreachStatus = clinic.outreachQueue && clinic.outreachQueue.length > 0
+                            ? clinic.outreachQueue[0].status
+                            : 'New';
 
                         const clinicCard = document.createElement('div');
                         clinicCard.className = 'clinic-card';
                         clinicCard.innerHTML = `
                             <div class="clinic-header">
                                 <div>
-                                    <div class="clinic-name">${clinic.name || clinic.clinic_name || 'Unknown Clinic'}</div>
-                                    <div class="clinic-location">${clinic.borough || clinic.location || 'London'}</div>
+                                    <div class="clinic-name">${clinic.name || 'Unknown Clinic'}</div>
+                                    <div class="clinic-location">${clinic.borough || 'London'}${clinic.address ? ', ' + clinic.address : ''}</div>
                                 </div>
                                 <div class="score-badge ${scoreClass}">${scoreLabel}</div>
                             </div>
@@ -407,11 +418,11 @@
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">Status</span>
-                                    <span class="detail-value">${clinic.status || 'New'}</span>
+                                    <span class="detail-value">${outreachStatus}</span>
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">Added</span>
-                                    <span class="detail-value">${clinic.created_at ? new Date(clinic.created_at).toLocaleDateString() : 'Recently'}</span>
+                                    <span class="detail-value">${new Date(clinic.createdAt).toLocaleDateString()}</span>
                                 </div>
                             </div>
                             <div class="clinic-actions">
@@ -422,7 +433,11 @@
                         clinicsGrid.appendChild(clinicCard);
                     });
                 } else {
-                    clinicsGrid.innerHTML = '<div class="loading-text">No clinics found</div>';
+                    clinicsGrid.innerHTML = `
+                        <div class="loading-text">
+                            No clinics found in the database. Start scraping to discover aesthetic clinics across London.
+                        </div>
+                    `;
                 }
 
             } catch (error) {
