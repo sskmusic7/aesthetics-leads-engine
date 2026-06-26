@@ -124,24 +124,49 @@ router.get('/:id', async (req, res) => {
 // GET /api/clinics/stats - Get clinic statistics
 router.get('/stats/overview', async (req, res) => {
   try {
-    const [
-      total_clinics,
-      cqc_registered,
-      save_face_listed,
-      with_scores,
-      with_ads,
-      boroughs
-    ] = await Promise.all([
-      prisma.clinic.count(),
-      prisma.clinic.count({ where: { cqcRegistered: true } }),
-      prisma.clinic.count({ where: { saveFaceListed: true } }),
-      prisma.clinic.count({ where: { scores: { some: {} } } }),
-      prisma.clinic.count({ where: { ads: { some: {} } } }),
-      prisma.clinic.groupBy({
+    // Get basic count
+    const total_clinics = await prisma.clinic.count();
+
+    // Try to get other stats with error handling
+    let cqc_registered = 0;
+    let save_face_listed = 0;
+    let with_scores = 0;
+    let with_ads = 0;
+    let boroughs = [];
+
+    // Safe queries with fallbacks
+    try {
+      cqc_registered = await prisma.clinic.count({ where: { cqcRegistered: true } });
+    } catch (e) {
+      console.log('cqcRegistered field not available');
+    }
+
+    try {
+      save_face_listed = await prisma.clinic.count({ where: { saveFaceListed: true } });
+    } catch (e) {
+      console.log('saveFaceListed field not available');
+    }
+
+    try {
+      with_scores = await prisma.clinic.count({ where: { scores: { some: {} } } });
+    } catch (e) {
+      console.log('scores relation not available');
+    }
+
+    try {
+      with_ads = await prisma.clinic.count({ where: { ads: { some: {} } } });
+    } catch (e) {
+      console.log('ads relation not available');
+    }
+
+    try {
+      boroughs = await prisma.clinic.groupBy({
         by: ['borough'],
         _count: true
-      })
-    ]);
+      });
+    } catch (e) {
+      console.log('borough grouping not available');
+    }
 
     res.json({
       success: true,
