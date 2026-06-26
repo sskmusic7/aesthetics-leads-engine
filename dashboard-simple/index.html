@@ -386,38 +386,41 @@
             const errorContainer = document.getElementById('error-container');
 
             try {
-                // Fetch both stats and recent clinics
-                const [statsRes, clinicsRes] = await Promise.all([
-                    fetch(`${API_BASE}/api/clinics/stats/overview`),
-                    fetch(`${API_BASE}/api/clinics?limit=5`)
-                ]);
+                // Fetch clinics data (this endpoint works reliably)
+                const clinicsRes = await fetch(`${API_BASE}/api/clinics?limit=100`);
 
-                if (!statsRes.ok || !clinicsRes.ok) {
+                if (!clinicsRes.ok) {
                     throw new Error('Failed to connect to backend');
                 }
 
-                const statsData = await statsRes.json();
                 const clinicsData = await clinicsRes.json();
+                const clinics = clinicsData.data || [];
 
-                // Update stats with real data
+                // Calculate stats from clinics data directly
+                const total_clinics = clinicsData.pagination?.total || clinics.length;
+                const with_scores = clinics.filter(c => c.scores && c.scores.length > 0).length;
+                const with_ads = clinics.filter(c => c.ads && c.ads.length > 0).length;
+                const with_outreach = clinics.filter(c => c.outreachQueue && c.outreachQueue.length > 0).length;
+
+                // Update stats with calculated data
                 const stats = statsGrid.querySelectorAll('.stat-card');
                 stats[0].classList.remove('loading');
-                stats[0].querySelector('.stat-value').textContent = statsData.data?.total_clinics || 0;
+                stats[0].querySelector('.stat-value').textContent = total_clinics;
 
                 stats[1].classList.remove('loading');
-                stats[1].querySelector('.stat-value').textContent = statsData.data?.with_scores || 0;
+                stats[1].querySelector('.stat-value').textContent = with_scores;
 
                 stats[2].classList.remove('loading');
-                stats[2].querySelector('.stat-value').textContent = statsData.data?.save_face_listed || 0;
+                stats[2].querySelector('.stat-value').textContent = with_ads;
 
                 stats[3].classList.remove('loading');
-                stats[3].querySelector('.stat-value').textContent = statsData.data?.cqc_registered || 0;
+                stats[3].querySelector('.stat-value').textContent = with_outreach;
 
-                // Update activity list
+                // Update activity list with recent clinics
                 activityList.innerHTML = '';
 
-                if (clinicsData.data && clinicsData.data.length > 0) {
-                    clinicsData.data.forEach(clinic => {
+                if (clinics.length > 0) {
+                    clinics.slice(0, 8).forEach(clinic => {
                         const activityItem = document.createElement('div');
                         activityItem.className = 'activity-item';
                         activityItem.innerHTML = `
@@ -426,7 +429,7 @@
                                 <div class="activity-text">Clinic: ${clinic.name || 'Unknown'}</div>
                                 <div class="activity-time">${clinic.borough || 'London'} - Added ${new Date(clinic.createdAt).toLocaleDateString()}</div>
                             </div>
-                            <div class="activity-status">${clinic.cqcRegistered ? 'Verified' : 'New'}</div>
+                            <div class="activity-status">${clinic.scores && clinic.scores.length > 0 ? 'Scored' : 'New'}</div>
                         `;
                         activityList.appendChild(activityItem);
                     });
