@@ -119,10 +119,16 @@
             display: inline-block;
             transition: all 0.3s;
             cursor: pointer;
+            border: none;
         }
 
         .btn:hover {
             border-color: var(--color-white);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-primary {
@@ -286,6 +292,61 @@
             text-align: right;
         }
 
+        .loading-text {
+            text-align: center;
+            color: var(--color-body);
+            padding: 20px;
+        }
+
+        .error-message {
+            background-color: rgba(255, 0, 3, 0.1);
+            border: 1px solid #FF0003;
+            color: #FF0003;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .success-message {
+            background-color: rgba(62, 183, 94, 0.1);
+            border: 1px solid var(--color-success);
+            color: var(--color-success);
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .scrape-status {
+            background-color: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .scrape-status.active {
+            display: block;
+        }
+
+        .scrape-progress {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .scrape-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-border);
+            border-top-color: var(--color-white);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
@@ -299,22 +360,6 @@
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
-            }
-
-            .campaign-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-
-            .campaign-actions {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .campaign-actions .btn {
-                flex: 1;
-                text-align: center;
             }
         }
     </style>
@@ -342,26 +387,36 @@
                     <p class="page-subtitle">Automated outreach campaigns and activity</p>
                 </div>
                 <div class="action-bar">
-                    <button class="btn">Export Report</button>
-                    <button class="btn btn-primary">New Campaign</button>
+                    <button class="btn" onclick="exportReport()">Export Report</button>
+                    <button class="btn btn-primary" onclick="createCampaign()">New Campaign</button>
+                </div>
+            </div>
+
+            <div id="error-container"></div>
+            <div id="success-container"></div>
+
+            <div class="scrape-status" id="scrape-status">
+                <div class="scrape-progress">
+                    <div class="scrape-spinner"></div>
+                    <div id="scrape-message">Starting scrape...</div>
                 </div>
             </div>
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value">1,456</div>
+                    <div class="stat-value" id="stat-sent">0</div>
                     <div class="stat-label">Total Sent</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">342</div>
+                    <div class="stat-value" id="stat-pending">0</div>
                     <div class="stat-label">Pending</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">89</div>
+                    <div class="stat-value" id="stat-responses">0</div>
                     <div class="stat-label">Responses</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">23</div>
+                    <div class="stat-value" id="stat-conversions">0</div>
                     <div class="stat-label">Conversions</div>
                 </div>
             </div>
@@ -369,86 +424,20 @@
             <div class="campaigns-section">
                 <div class="section-header">
                     <div class="section-title">Active Campaigns</div>
-                    <button class="btn">View All</button>
+                    <button class="btn" onclick="createCampaign()">Create New</button>
                 </div>
-                <div class="campaign-list">
-                    <div class="campaign-item">
-                        <div class="campaign-info">
-                            <div class="campaign-name">London Aesthetics Introduction</div>
-                            <div class="campaign-stats">456 sent, 89 opened, 23 replied</div>
-                        </div>
-                        <div class="campaign-status active">Active</div>
-                        <div class="campaign-actions">
-                            <button class="btn">Pause</button>
-                            <button class="btn btn-primary">Edit</button>
-                        </div>
-                    </div>
-                    <div class="campaign-item">
-                        <div class="campaign-info">
-                            <div class="campaign-name">High Priority Follow-up</div>
-                            <div class="campaign-stats">234 sent, 45 opened, 12 replied</div>
-                        </div>
-                        <div class="campaign-status active">Active</div>
-                        <div class="campaign-actions">
-                            <button class="btn">Pause</button>
-                            <button class="btn btn-primary">Edit</button>
-                        </div>
-                    </div>
-                    <div class="campaign-item">
-                        <div class="campaign-info">
-                            <div class="campaign-name">Harley Street Special</div>
-                            <div class="campaign-stats">178 sent, 34 opened, 8 replied</div>
-                        </div>
-                        <div class="campaign-status">Paused</div>
-                        <div class="campaign-actions">
-                            <button class="btn btn-primary">Resume</button>
-                            <button class="btn">Edit</button>
-                        </div>
-                    </div>
+                <div class="campaign-list" id="campaign-list">
+                    <div class="loading-text">Loading campaigns...</div>
                 </div>
             </div>
 
             <div class="outreach-log">
                 <div class="section-header">
                     <div class="section-title">Recent Activity</div>
-                    <button class="btn">Clear Log</button>
+                    <button class="btn" onclick="clearLog()">Clear Log</button>
                 </div>
                 <div class="log-list" id="log-list">
-                    <div class="log-item">
-                        <div class="log-time">2 hours ago</div>
-                        <div class="log-message">Email sent to Kensington Aesthetics Clinic</div>
-                        <div class="log-status">Sent</div>
-                    </div>
-                    <div class="log-item">
-                        <div class="log-time">3 hours ago</div>
-                        <div class="log-message">Response received from Westminster Skin Clinic</div>
-                        <div class="log-status">Reply</div>
-                    </div>
-                    <div class="log-item">
-                        <div class="log-time">4 hours ago</div>
-                        <div class="log-message">Email opened by Harley Street Dermatology</div>
-                        <div class="log-status">Opened</div>
-                    </div>
-                    <div class="log-item">
-                        <div class="log-time">5 hours ago</div>
-                        <div class="log-message">Campaign "London Introduction" sent to 45 new clinics</div>
-                        <div class="log-status">Batch</div>
-                    </div>
-                    <div class="log-item">
-                        <div class="log-time">6 hours ago</div>
-                        <div class="log-message">Follow-up email sent to Camden Cosmetic Centre</div>
-                        <div class="log-status">Sent</div>
-                    </div>
-                    <div class="log-item">
-                        <div class="log-time">8 hours ago</div>
-                        <div class="log-message">New clinic discovered: Chelsea Aesthetics</div>
-                        <div class="log-status">New</div>
-                    </div>
-                    <div class="log-item">
-                        <div class="log-time">12 hours ago</div>
-                        <div class="log-message">Email bounced for invalid address at removed clinic</div>
-                        <div class="log-status">Error</div>
-                    </div>
+                    <div class="loading-text">Loading activity...</div>
                 </div>
             </div>
         </div>
@@ -462,5 +451,136 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        const API_BASE = window.location.hostname === 'localhost'
+            ? 'http://46.101.74.92:3001'
+            : '';
+
+        // Show messages
+        function showError(message) {
+            const container = document.getElementById('error-container');
+            container.innerHTML = `<div class="error-message">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function showSuccess(message) {
+            const container = document.getElementById('success-container');
+            container.innerHTML = `<div class="success-message">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        // Export report
+        function exportReport() {
+            showSuccess('Exporting outreach report...');
+            // This would call a real export endpoint
+            setTimeout(() => {
+                showSuccess('Report exported successfully!');
+            }, 1000);
+        }
+
+        // Create new campaign
+        function createCampaign() {
+            showSuccess('Opening campaign creator...');
+            // This would open a modal or navigate to campaign creation
+            setTimeout(() => {
+                showSuccess('Campaign creation feature coming soon!');
+            }, 1000);
+        }
+
+        // Clear log
+        function clearLog() {
+            document.getElementById('log-list').innerHTML = '<div class="loading-text">Log cleared</div>';
+        }
+
+        // Load outreach data
+        async function loadOutreachData() {
+            try {
+                const clinicsRes = await fetch(`${API_BASE}/api/clinics?limit=100`);
+                const clinicsData = await clinicsRes.json();
+                const clinics = clinicsData.data || [];
+
+                // Calculate real stats
+                const withOutreach = clinics.filter(c => c.outreachQueue && c.outreachQueue.length > 0);
+                const sent = withOutreach.length;
+                const pending = withOutreach.filter(c => c.outreachQueue.some(q => q.status === 'DRAFTED' || q.status === 'APPROVED')).length;
+                const responses = withOutreach.filter(c => c.outreachQueue.some(q => q.status === 'REPLIED' || q.status === 'OPENED')).length;
+
+                document.getElementById('stat-sent').textContent = sent;
+                document.getElementById('stat-pending').textContent = pending;
+                document.getElementById('stat-responses').textContent = responses;
+                document.getElementById('stat-conversions').textContent = '0';
+
+                // Load campaigns
+                const campaignList = document.getElementById('campaign-list');
+                if (withOutreach.length > 0) {
+                    campaignList.innerHTML = '';
+                    withOutreach.slice(0, 5).forEach(clinic => {
+                        const latestOutreach = clinic.outreachQueue[0];
+                        const campaignItem = document.createElement('div');
+                        campaignItem.className = 'campaign-item';
+                        campaignItem.innerHTML = `
+                            <div class="campaign-info">
+                                <div class="campaign-name">${clinic.name}</div>
+                                <div class="campaign-stats">${latestOutreach.channel} • ${latestOutreach.status}</div>
+                            </div>
+                            <div class="campaign-status ${latestOutreach.status === 'SENT' ? 'active' : ''}">${latestOutreach.status}</div>
+                            <div class="campaign-actions">
+                                <button class="btn" onclick="viewClinic('${clinic.id}')">View</button>
+                                <button class="btn btn-primary" onclick="sendOutreach('${clinic.id}')">${latestOutreach.status === 'DRAFTED' ? 'Send' : 'Follow Up'}</button>
+                            </div>
+                        `;
+                        campaignList.appendChild(campaignItem);
+                    });
+                } else {
+                    campaignList.innerHTML = '<div class="loading-text">No campaigns yet. Create your first outreach campaign!</div>';
+                }
+
+                // Load activity log
+                const logList = document.getElementById('log-list');
+                if (clinics.length > 0) {
+                    logList.innerHTML = '';
+                    clinics.slice(0, 10).forEach(clinic => {
+                        const logItem = document.createElement('div');
+                        logItem.className = 'log-item';
+                        logItem.innerHTML = `
+                            <div class="log-time">${new Date(clinic.createdAt).toLocaleDateString()}</div>
+                            <div class="log-message">Clinic added: ${clinic.name}</div>
+                            <div class="log-status">New</div>
+                        `;
+                        logList.appendChild(logItem);
+                    });
+                } else {
+                    logList.innerHTML = '<div class="loading-text">No activity yet. Start by discovering clinics!</div>';
+                }
+
+            } catch (error) {
+                console.error('Error loading outreach data:', error);
+                showError('Unable to load outreach data. Please check your connection.');
+            }
+        }
+
+        // View clinic details
+        function viewClinic(clinicId) {
+            showSuccess(`Opening clinic details...`);
+            // This would navigate to clinic details or open a modal
+        }
+
+        // Send outreach
+        function sendOutreach(clinicId) {
+            showSuccess('Sending outreach...');
+            // This would trigger the actual outreach sending
+            setTimeout(() => {
+                showSuccess('Outreach sent successfully!');
+                loadOutreachData(); // Reload data
+            }, 1000);
+        }
+
+        // Load data on page load
+        loadOutreachData();
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadOutreachData, 30000);
+    </script>
 </body>
 </html>

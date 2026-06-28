@@ -321,8 +321,8 @@
                     <p class="page-subtitle">Manage discovered aesthetic clinics</p>
                 </div>
                 <div class="action-bar">
-                    <a href="#" class="btn">Export</a>
-                    <a href="#" class="btn btn-primary">+ Add Clinic</a>
+                    <a href="#" class="btn" onclick="exportClinics(); return false;">Export</a>
+                    <a href="#" class="btn btn-primary" onclick="addClinic(); return false;">+ Add Clinic</a>
                 </div>
             </div>
 
@@ -450,6 +450,23 @@
                 clinicsGrid.innerHTML = '<div class="loading-text">Unable to load clinics</div>';
             }
         }
+
+        // Export clinics
+        function exportClinics() {
+            alert('Exporting clinics data...');
+            // This would trigger a real export
+        }
+
+        // Add clinic
+        function addClinic() {
+            alert('Opening clinic addition form...');
+            // This would open a modal or navigate to clinic creation
+        }
+
+        // Filter changes
+        document.getElementById('borough-filter')?.addEventListener('change', fetchClinics);
+        document.getElementById('score-filter')?.addEventListener('change', fetchClinics);
+        document.getElementById('status-filter')?.addEventListener('change', fetchClinics);
 
         // Load clinics on page load
         fetchClinics();
